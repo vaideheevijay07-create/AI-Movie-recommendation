@@ -1,0 +1,152 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "movie-recommendation",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "536d8f11-6082-4c23-8ec8-172894fdde2d",
+      "name": "Webhook",
+      "webhookId": "6005b0be-b376-4ee5-a319-f1f201240f13"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a movie recommendation expert.\n\nA user likes this genre:\n\n{{ $json.genre }}\n\nRecommend 5 movies.\n\nFor each movie provide:\n1. Movie name\n2. Release year\n3. One-line description\n\nReturn output in the required structured format.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "4cfb4de3-f21e-4fd9-861f-edaf6b1bc7a5",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"movies\": [\n    {\n      \"movie_name\": \"string\",\n      \"release_year\": \"string\",\n      \"description\": \"string\"\n    }\n  ]\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        368,
+        208
+      ],
+      "id": "09afb74c-4b71-4cef-a460-a841a78c39d7",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        128,
+        224
+      ],
+      "id": "7f30248e-453b-48b3-848d-bba125c1c186",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "uwTS190F1GTB0NaA",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        640,
+        0
+      ],
+      "id": "adc7c68b-7f8d-4a9c-92e8-0db029f7d1bb",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "7f7a04cf-3e5a-4b33-8ee9-6b49b3ce70a4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3c113a7a6e300cf07caa5450c40011fa650b62a3a95f1d6ecf100c74500e6fa8"
+  },
+  "nodeGroups": [],
+  "id": "FDtZ5VUN07aB26Kn",
+  "tags": []
+}
